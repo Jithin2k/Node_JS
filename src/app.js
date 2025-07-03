@@ -1,26 +1,35 @@
 const express = require("express");
-
+const connectDB = require("./Config/Database");
 const app = express();
 
-const {adminAuth ,userAuth} = require('./Middleware/auth')
+const User = require("./models/user");
 
-// Handle Auth MiddleWare
+app.post("/signup", async (req, res) => {
+  const userObj = {
+    firstName: "Jithin",
+    lastName: "Madhav",
+    email: "j@gmail.com",
+    password: "jjm@123456",
+    age: 25,
+  };
 
-app.use("/admin",adminAuth)
+  const user = new User(userObj);
 
-app.get("/user",userAuth,(req,res) => {
-  res.send("User Data Sent")
-})
-
-app.get("/admin/getAllDAta",(req,res) => {
-  res.send("All Data Sent")
-})
-
-app.get("/admin/deleteuser",(req,res) => {
-  res.send("Deleted a User")
-})
-
-
-app.listen(3000, () => {
-  console.log("Server is running in http://localhost:3000 ");
+  try {
+    await user.save();
+    res.send("User Added to DB");
+  } catch (error) {
+    res.status(400).send("Failed to save User data");
+  }
 });
+
+connectDB()
+  .then(() => {
+    console.log("DB Connection Established");
+    app.listen(3000, () => {
+      console.log("Server is running in http://localhost:3000 ");
+    });
+  })
+  .catch((err) => {
+    console.log("DB connecction Failed");
+  });

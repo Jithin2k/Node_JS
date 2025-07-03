@@ -2,26 +2,24 @@ const express = require("express");
 
 const app = express();
 
-app.get("/user", (req, res) => {
-  res.send({
-    firstName: "Jithin",
-    lastName: "Madhav",
-  });
-});
+const {adminAuth ,userAuth} = require('./Middleware/auth')
 
-app.post("/user", (req, res) => {
-  console.log("Data Added to Database");
-  res.send("Data Successfully Added");
-});
+// Handle Auth MiddleWare
 
-app.delete("/user", (req, res) => {
-  res.send("Data Deleted");
-});
+app.use("/admin",adminAuth)
 
-// use will match all http routes
-app.use("/a", (req, res) => {
-  res.send("Hello Welcome To A");
-});
+app.get("/user",userAuth,(req,res) => {
+  res.send("User Data Sent")
+})
+
+app.get("/admin/getAllDAta",(req,res) => {
+  res.send("All Data Sent")
+})
+
+app.get("/admin/deleteuser",(req,res) => {
+  res.send("Deleted a User")
+})
+
 
 app.listen(3000, () => {
   console.log("Server is running in http://localhost:3000 ");

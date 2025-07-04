@@ -4,16 +4,11 @@ const app = express();
 
 const User = require("./models/user");
 
-app.post("/signup", async (req, res) => {
-  const userObj = {
-    firstName: "Jithin",
-    lastName: "Madhav",
-    email: "j@gmail.com",
-    password: "jjm@123456",
-    age: 25,
-  };
+app.use(express.json());
 
-  const user = new User(userObj);
+app.post("/signup", async (req, res) => {
+
+  const user = new User(req.body);
 
   try {
     await user.save();
@@ -21,7 +16,7 @@ app.post("/signup", async (req, res) => {
   } catch (error) {
     res.status(400).send("Failed to save User data");
   }
-});
+ });
 
 connectDB()
   .then(() => {
@@ -32,4 +27,4 @@ connectDB()
   })
   .catch((err) => {
     console.log("DB connecction Failed");
-  });
+  })

@@ -31,7 +31,8 @@ app.get("/user", async (req, res) => {
   }
 });
 
-// GET request to shoe all users
+
+// GET request to show all users
 
 app.get("/feed",async (req,res)=>{
   try {
@@ -41,6 +42,32 @@ app.get("/feed",async (req,res)=>{
      res.status(404).send("Failed request");
   }
 })
+
+// DELETE a user by ID
+app.delete("/user",async(req,res) => {
+  const userId = req.body.userId;
+  console.log(userId)
+  try {
+    const user = await User.findByIdAndDelete(userId);
+    res.send("User Deleted Successfully")
+  } catch (error) {
+    res.status(404).send("Failed request");
+  }
+})
+
+// Update DAta of user
+
+app.patch("/user",async(req,res) =>{
+  const userId = req.body.userId;
+  const data = req.body;
+  try {
+    await User.findByIdAndUpdate({_id : userId},data);
+    res.send("User Updated Successfully")
+  } catch (error) {
+     res.status(404).send("Failed request");
+  }
+})
+
 
 connectDB()
   .then(() => {

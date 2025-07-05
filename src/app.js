@@ -9,10 +9,13 @@ app.use(express.json());
 app.post("/signup", async (req, res) => {
   const user = new User(req.body);
   try {
+    if(user.skills.length > 10){
+      throw new Error("SKills cannot exceed 10")
+    }
     await user.save();
     res.send("User Added to DB");
   } catch (error) {
-    res.status(400).send("Failed to save User data");
+    res.status(400).send(error.message);
   }
 });
 
@@ -27,7 +30,7 @@ app.get("/user", async (req, res) => {
       res.send(users);
     }
   } catch (error) {
-    res.status(404).send("Failed request");
+    res.status(404).send(error.message);
   }
 });
 
@@ -51,23 +54,38 @@ app.delete("/user",async(req,res) => {
     const user = await User.findByIdAndDelete(userId);
     res.send("User Deleted Successfully")
   } catch (error) {
-    res.status(404).send("Failed request");
+    res.status(404).send(error.message);
   }
 })
 
 // Update DAta of user
 
-app.patch("/user",async(req,res) =>{
-  const userId = req.body.userId;
+app.patch("/user/:userId",async(req,res) =>{
+  const userId = req.params.userId;
   const data = req.body;
   try {
+
+
+    const ALLOWED_UPDATES = ["age","skills","photoUrl","about","gender","userId"];
+    const isUpdateAllowed = Object.keys(data).every((k) => ALLOWED_UPDATES.includes(k));
+
+    if(!isUpdateAllowed){
+      throw new Error("Update Not Allowed")
+    }
+
+    if (data.skills.length > 10) {
+      throw new Error("Skills limit cannot exceed 10")
+    }
+
+
+
    const user = await User.findByIdAndUpdate({_id : userId},data,{
     returnDocument:"after",
     runValidators:true,
    });
     res.send("User Updated Successfully")
   } catch (error) {
-     res.status(404).send("Failed request");
+     res.status(404).send(error.message);
   }
 })
 

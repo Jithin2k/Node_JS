@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+// Email Validation Library
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -24,6 +26,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     trim: true,
+   validate(value){
+      if(!validator.isEmail(value)){
+        throw new Error("Email is not valid")
+      }
+    }
   },
   gender: {
     type: String,
@@ -38,7 +45,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    minLength : 8
+    minLength : 8,
+    validate(value){
+      if(!validator.isStrongPassword(value)){
+        throw new Error("Strong Password Required")
+      }
+    }
   },
   about: {
     type: String,

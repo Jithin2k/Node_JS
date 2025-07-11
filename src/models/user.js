@@ -93,6 +93,12 @@ userSchema.methods.verifyPassword = async function (passwordInputByUser) {
   return isPasswordValid;
 };
 
+userSchema.methods.hashPassword = async function (newPassword){
+  
+
+  return await bcrypt.hash(newPassword,10)
+}
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

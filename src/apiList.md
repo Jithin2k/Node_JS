@@ -1,15 +1,15 @@
 # List Of Api
 
 <!-- Auth router -->
-# POST/signup
-# POST/login
-# POST/logout
+# POST/signup - done
+# POST/login - done
+# POST/logout - done
 
 
 <!-- ProfileRouter -->
-# GET/profile/view
-# PATCH/profile/edit
-# PATCH/profile/password
+# GET/profile/view - done
+# PATCH/profile/edit - done  
+# PATCH/profile/password - done
 
 
 <!-- Connection Request Router -->

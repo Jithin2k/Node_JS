@@ -13,10 +13,11 @@
 
 
 <!-- Connection Request Router -->
-# POST/request/send/interested/:userId
-# POST/request/send/ignored/:userId
-# POST/request/review/accepted/:requestId
-# POST/request/review/rejected/:requestId
+# POST/request/send/interested/:userId - done
+# POST/request/send/ignored/:userId - done
+
+# POST/request/review/accepted/:requestId - done
+# POST/request/review/rejected/:requestId - done
 
 
 <!-- userRouter -->

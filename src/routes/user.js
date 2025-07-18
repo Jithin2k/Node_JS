@@ -10,14 +10,34 @@ userRouter.get("/user/requests/recieved", userAuth, async (req, res) => {
 
     const connectionRequest = await ConnectionRequest.find({
       toUserId: loggedInUser._id,
-      status: "interested"
-    }).populate("fromUserId",["firstName","lastName"])
+      status: "interested",
+    }).populate("fromUserId", ["firstName", "lastName"]);
 
     res.json({
-        message : "Data Fetched Successfully",
-        data : connectionRequest
-    })
+      message: "Data Fetched Successfully",
+      data: connectionRequest,
+    });
+  } catch (error) {
+    res.status(400).send("ERROR:" + error.message);
+  }
+});
 
+// GET ALL CONNECTION REQUEST
+userRouter.get("/user/connections", userAuth, async (req, res) => {
+  try {
+    // Get logged in user from userAuth;
+    const loggedInUser = req.user;
+    // Find connections of loggedIn user
+    const connectionRequest = await ConnectionRequest.find({
+      $or: [
+        { toUserId: loggedInUser._id, status: "accepted" },
+        { fromUserId: loggedInUser, status: "accepted" },
+      ],
+    }).populate("fromUserId",["firstName","lastName","age"]);
+
+    const data = connectionRequest.map((item) => item.fromUserId)
+
+    res.json({ data });
   } catch (error) {
     res.status(400).send("ERROR:" + error.message);
   }

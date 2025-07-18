@@ -50,4 +50,35 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
   }
 });
 
+// FEED API
+userRouter.get("/feed", userAuth, async (req, res) => {
+  try {
+    // 1.Find Logged user
+    const loggedInUser = req.user;
+
+    // 2.Find all connection req SEND & RECIEVED
+    const connectionRequest = await ConnectionRequest.find({
+      $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
+    })
+      .select("fromUserId toUserId")
+      // .populate("fromUserId", "firstName")
+      // .populate("toUserId", "firstName");
+
+      // 3.Blocked Users - set is used here 
+    const hideUsersFromFeed = new Set();
+
+    connectionRequest.forEach((item) =>{
+      hideUsersFromFeed.add(item.fromUserId).toString();
+      hideUsersFromFeed.add(item.toUserId).toString();
+    })
+
+    console.log(hideUsersFromFeed);
+    
+
+    res.send(connectionRequest);
+  } catch (error) {
+    res.status(400).send("ERROR:" + error.message);
+  }
+});
+
 module.exports = userRouter;

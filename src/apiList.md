@@ -21,6 +21,6 @@
 
 
 <!-- userRouter -->
-# GET/user/connections
-# GET/user/requests/recieved
+# GET/user/connections - done
+# GET/user/requests/recieved - done
 # GET/user/feed

@@ -58,6 +58,11 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     // 1.Find Logged user
     const loggedInUser = req.user;
 
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    limit = limit > 50 ? 50 : limit;
+    const skip = (page - 1) * limit;
+
     // 2.Find all connection req SEND & RECIEVED
     const connectionRequest = await ConnectionRequest.find({
       $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
@@ -66,14 +71,13 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     // .populate("toUserId", "firstName");
 
     // 3.Blocked Users - set is used here
-    const hideUsersFromFeed = new Set();
+    const hideUsersFromFeed = new Set();;
 
     connectionRequest.forEach((item) => {
       hideUsersFromFeed.add(item.fromUserId).toString();
       hideUsersFromFeed.add(item.toUserId).toString();
     });
 
-    console.log(hideUsersFromFeed);
 
     const users = await User.find({
       $and: [
@@ -82,7 +86,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
         // not equal
         { _id: { $ne: loggedInUser._id } },
       ],
-    }).select(USER_SAFE_DATA);
+    }).select(USER_SAFE_DATA).skip(skip).limit(limit)
 
     res.send(users);
   } catch (error) {

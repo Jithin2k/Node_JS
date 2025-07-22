@@ -1,7 +1,9 @@
 const express = require("express");
 const { userAuth } = require("../Middleware/auth");
 const ConnectionRequest = require("../models/connectionRequest");
+const User = require("../models/user");
 const userRouter = express.Router();
+const USER_SAFE_DATA = "firstName lastName age gender about skills"
 
 // Get all pending connection requests for loggedIn user
 userRouter.get("/user/requests/recieved", userAuth, async (req, res) => {
@@ -59,23 +61,30 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     // 2.Find all connection req SEND & RECIEVED
     const connectionRequest = await ConnectionRequest.find({
       $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
-    })
-      .select("fromUserId toUserId")
-      // .populate("fromUserId", "firstName")
-      // .populate("toUserId", "firstName");
+    }).select("fromUserId toUserId");
+    // .populate("fromUserId", "firstName")
+    // .populate("toUserId", "firstName");
 
-      // 3.Blocked Users - set is used here 
+    // 3.Blocked Users - set is used here
     const hideUsersFromFeed = new Set();
 
-    connectionRequest.forEach((item) =>{
+    connectionRequest.forEach((item) => {
       hideUsersFromFeed.add(item.fromUserId).toString();
       hideUsersFromFeed.add(item.toUserId).toString();
-    })
+    });
 
     console.log(hideUsersFromFeed);
-    
 
-    res.send(connectionRequest);
+    const users = await User.find({
+      $and: [
+        // not in 
+        { _id: { $nin: Array.from(hideUsersFromFeed) } },
+        // not equal
+        { _id: { $ne: loggedInUser._id } },
+      ],
+    }).select(USER_SAFE_DATA);
+
+    res.send(users);
   } catch (error) {
     res.status(400).send("ERROR:" + error.message);
   }
